@@ -9,7 +9,7 @@ var factory = new ConnectionFactory()
     Password = "guest",
     Port = 5672,
     AutomaticRecoveryEnabled = true,
-    VirtualHost = "SiPintarv5"
+    VirtualHost = "DemoApp"
 };
 
 using var connection = factory.CreateConnection();
@@ -33,7 +33,6 @@ consumer.Received += (model, ea) =>
         Console.WriteLine($"Consumer2 - Received new message : {message}");  
 
         channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
-        Console.WriteLine($"Done");
     }
     catch (Exception e)
     {

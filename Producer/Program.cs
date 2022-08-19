@@ -10,7 +10,7 @@ var factory = new ConnectionFactory()
     Password = "guest",
     Port = 5672,
     AutomaticRecoveryEnabled = true,
-    VirtualHost = "SiPintarv5"
+    VirtualHost = "DemoApp"
 };
 
 using var connection = factory.CreateConnection();
@@ -19,28 +19,33 @@ using var channel = connection.CreateModel();
 
 channel.ExchangeDeclare(exchange: "sipintar.pdam[1]", type: ExchangeType.Topic);
 
-#region message
-
-var data = new List<User>();
-data.Add(new User()
+while (true)
 {
-    ID = Guid.NewGuid(),
-    Nama = "Yoga"
-});
+    #region message
 
-var message = JsonConvert.SerializeObject(new ParamMessage()
-{
-    Process = "Order",
-    Method = "Insert",
-    Data = data
-});
+    var data = new List<User>();
+    data.Add(new User()
+    {
+        ID = Guid.NewGuid(),
+        Nama = "Yoga"
+    });
 
-#endregion
+    var message = JsonConvert.SerializeObject(new ParamMessage()
+    {
+        Process = "Order",
+        Method = "Insert",
+        Data = data
+    });
 
-var body = Encoding.UTF8.GetBytes(message);
+    #endregion
 
-channel.BasicPublish(exchange: "sipintar.pdam[1]","user.process",null,body);
+    var body = Encoding.UTF8.GetBytes(message);
 
-channel.BasicPublish(exchange: "sipintar.pdam[1]","order.process",null,body);
+    channel.BasicPublish(exchange: "sipintar.pdam[1]","user.process",null,body);
 
-Console.WriteLine($"Send Message : {message}");
+    channel.BasicPublish(exchange: "sipintar.pdam[1]","order.process",null,body);
+
+    Console.WriteLine($"Send Message : {message}");
+
+    await Task.Delay(3000);
+}
