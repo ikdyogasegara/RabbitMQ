@@ -3,49 +3,63 @@ using Newtonsoft.Json;
 using Producer;
 using RabbitMQ.Client;
 
-var factory = new ConnectionFactory()
+try
 {
-    HostName = "localhost",
-    UserName = "guest",
-    Password = "guest",
-    Port = 5672,
-    AutomaticRecoveryEnabled = true,
-    VirtualHost = "DemoApp"
-};
-
-using var connection = factory.CreateConnection();
-
-using var channel = connection.CreateModel();
-
-channel.ExchangeDeclare(exchange: "sipintar.pdam[1]", type: ExchangeType.Topic);
-
-while (true)
-{
-    #region message
-
-    var data = new List<User>();
-    data.Add(new User()
+    var factory = new ConnectionFactory()
     {
-        ID = Guid.NewGuid(),
-        Nama = "Yoga"
-    });
+        // Uri = new Uri("amqp://sipintarv5:sipintarv5@202.150.91.227:5672/%2f"),
+        HostName = "202.150.91.227",
+        UserName = "sipintarv5",
+        Password = "sipintarv5",
+        Port = 5672,
+        AutomaticRecoveryEnabled = true,
+        VirtualHost = "pegasusv2",
+        DispatchConsumersAsync = true,
+    };
 
-    var message = JsonConvert.SerializeObject(new ParamMessage()
+    Console.WriteLine($"Create factory connection");
+
+    using var connection = factory.CreateConnection();
+
+    Console.WriteLine($"Factory connection Success");
+
+    using var channel = connection.CreateModel();
+
+    channel.ExchangeDeclare(exchange: "sipintar.pdam[1]", type: ExchangeType.Topic);
+
+    while (true)
     {
-        Process = "Order",
-        Method = "Insert",
-        Data = data
-    });
+        #region message
 
-    #endregion
+        var data = new List<User>();
+        data.Add(new User()
+        {
+            ID = Guid.NewGuid(),
+            Nama = "Yoga"
+        });
 
-    var body = Encoding.UTF8.GetBytes(message);
+        var message = JsonConvert.SerializeObject(new ParamMessage()
+        {
+            Process = "Order",
+            Method = "Insert",
+            Data = data
+        });
 
-    channel.BasicPublish(exchange: "sipintar.pdam[1]","user.process",null,body);
+        #endregion
 
-    channel.BasicPublish(exchange: "sipintar.pdam[1]","order.process",null,body);
+        var body = Encoding.UTF8.GetBytes(message);
 
-    Console.WriteLine($"Send Message : {message}");
+        channel.BasicPublish(exchange: "sipintar.pdam[1]", "user.process", null, body);
 
-    await Task.Delay(3000);
+        channel.BasicPublish(exchange: "sipintar.pdam[1]", "order.process", null, body);
+
+        Console.WriteLine($"Send Message : {message}");
+
+        await Task.Delay(3000);
+    }
 }
+catch (Exception e)
+{
+    Console.WriteLine($"error : {e}");
+}
+
