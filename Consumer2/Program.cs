@@ -5,11 +5,11 @@ using RabbitMQ.Client.Events;
 var factory = new ConnectionFactory()
 {
     HostName = "localhost",
-    UserName = "guest",
-    Password = "guest",
+    UserName = "sipintarv5",
+    Password = "sipintarv5",
     Port = 5672,
     AutomaticRecoveryEnabled = true,
-    VirtualHost = "DemoApp"
+    VirtualHost = "pegasusv2"
 };
 
 using var connection = factory.CreateConnection();

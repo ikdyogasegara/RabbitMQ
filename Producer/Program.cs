@@ -8,7 +8,7 @@ try
     var factory = new ConnectionFactory()
     {
         // Uri = new Uri("amqp://sipintarv5:sipintarv5@202.150.91.227:5672/%2f"),
-        HostName = "202.150.91.227",
+        HostName = "localhost",
         UserName = "sipintarv5",
         Password = "sipintarv5",
         Port = 5672,
